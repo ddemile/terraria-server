@@ -51,16 +51,17 @@ export default class TerrariaServer extends EventEmitter {
         this.server.write(command + '\r')
 
         return new Promise((resolve, reject) => {
-            this.server.onData((data) => {
-                const result = data.split('\n')
-
-                if (data.startsWith(command) || result[0].split(command)[1] != undefined) {
-                    result.shift()
-                    result.pop()
-                    result.pop()
+            const result = []
+            let started = false
+            this.on('console', (data) => {
+                if (data.startsWith(':')) {
                     clearTimeout(timeout)
-                    resolve(result.join('\n').replaceAll('', " "))
+                    resolve(result.join(' ').replaceAll('', " "))
                 }
+
+                if (started) result.push(data)
+
+                if (data.split(command)[1] != undefined) started = true
             })
 
             const timeout = setTimeout(() => {
@@ -96,7 +97,6 @@ export default class TerrariaServer extends EventEmitter {
         if (!this.ready) throw new Error('The server is not started')
         this.command('exit').catch()
     }
-
 
     say(message) {
         if (!message) throw new Error('No message provided')
