@@ -59,7 +59,7 @@ export default class TerrariaServer extends EventEmitter {
                     resolve(result.join(' ').replaceAll('', " "))
                 }
 
-                if (started) result.push(data.trim())
+                if (started) result.push(data)
 
                 if (data.split(command)[1] != undefined) started = true
             })
