@@ -1,0 +1,26 @@
+{
+  "name": "terraria-server",
+  "version": "1.0.0",
+  "description": "A package to manage a Terraria server with js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddemile/terraria-server.git"
+  },
+  "keywords": [
+    "terraria"
+  ],
+  "author": "ddemile",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ddemile/terraria-server/issues"
+  },
+  "homepage": "https://github.com/ddemile/terraria-server#readme",
+  "dependencies": {
+    "node-pty": "^0.10.1"
+  },
+  "type": "module"
+}
