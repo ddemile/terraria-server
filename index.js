@@ -25,7 +25,7 @@ export default class TerrariaServer extends EventEmitter {
                 this.ready = true
                 this.emit('start')
             }
-            if (data.trim().startsWith('Restarting server...')) {
+            if (data.trim().startsWith('Error Logging Enabled.') && this.ready) {
                 this.emit('stop')
             }
             if (data.split(' has joined.')[1]) {
@@ -95,7 +95,7 @@ export default class TerrariaServer extends EventEmitter {
 
     stop() {
         if (!this.ready) throw new Error('The server is not started')
-        this.command('exit').catch()
+        this.command('exit').catch(() => {})
     }
 
     say(message) {
