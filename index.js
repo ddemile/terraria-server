@@ -19,6 +19,7 @@ export default class TerrariaServer extends EventEmitter {
         this.password = password
         this.motd = motd
         this.ready = false
+        this.setMaxListeners(12)
 
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {
@@ -43,7 +44,7 @@ export default class TerrariaServer extends EventEmitter {
 
         this.on('start', () => { if (this.motd != "") this.command(`motd ${this.motd}\r`) })
     }
-    
+
     command(command) {
         if (!command) throw new Error('No command provided')
         if (!this.ready) return new Error('The server is not started')
@@ -95,12 +96,30 @@ export default class TerrariaServer extends EventEmitter {
 
     stop() {
         if (!this.ready) throw new Error('The server is not started')
-        this.command('exit').catch(() => {})
+        this.command('exit').catch(() => { })
     }
 
     say(message) {
         if (!message) throw new Error('No message provided')
 
         this.command(`say ${message}`)
+    }
+
+    get players() {
+        if (!this.ready) return new Error('The server is not started')
+        return (async () => {
+            try {
+                return await new Promise(async (resolve, reject) => {
+                    const reponse = await this.command('playing')
+                    let lines = reponse.startsWith("No players connected.") ? [] : reponse.split('\r').filter(line => line != '').map(line => line.trim())
+                    lines.pop()
+
+                    resolve(lines.map(line => ({ name: line.split('(')[0].trim(), ip: line.split('(')[1].split(')')[0] })))
+                });
+            } catch (e) {
+                return 0;
+            }
+        })();
+
     }
 }
