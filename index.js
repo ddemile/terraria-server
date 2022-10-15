@@ -19,6 +19,7 @@ export default class TerrariaServer extends EventEmitter {
         this.password = password
         this.motd = motd
         this.ready = false
+        this.readyTimestamp = null
         this.setMaxListeners(12)
 
         this.on('console', (data) => {
@@ -42,7 +43,10 @@ export default class TerrariaServer extends EventEmitter {
             }
         })
 
-        this.on('start', () => { if (this.motd != "") this.command(`motd ${this.motd}\r`) })
+        this.on('start', () => {
+            if (this.motd != "") this.command(`motd ${this.motd}\r`) 
+            this.readyTimestamp = Date.now()
+        })
     }
 
     command(command) {
@@ -109,7 +113,7 @@ export default class TerrariaServer extends EventEmitter {
         if (!this.ready) return new Error('The server is not started')
         return (async () => {
             try {
-                return await new Promise(async (resolve, reject) => {
+                return await new Promise(async (resolve) => {
                     const reponse = await this.command('playing')
                     let lines = reponse.startsWith("No players connected.") ? [] : reponse.split('\r').filter(line => line != '').map(line => line.trim())
                     lines.pop()
@@ -120,6 +124,10 @@ export default class TerrariaServer extends EventEmitter {
                 return 0;
             }
         })();
+    }
 
+    get uptime () {
+        if (!this.ready) return null
+        return Date.now() - this.readyTimestamp
     }
 }
