@@ -1,9 +1,22 @@
 import os from "os";
 import pty from "node-pty";
 import EventEmitter from "events";
+import Player from './Player'
 let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
 export default class TerrariaServer extends EventEmitter {
+    path: string
+    file: string
+    worldId: number
+    maxPlayers: number
+    port: number
+    autoForwardPort: boolean
+    password: string
+    motd: string
+    ready: boolean
+    readyTimestamp: number | null
+    server: pty.IPty
+
     constructor({ path, file, worldId = 1, maxPlayers = 16, port = 7777, autoForwardPort = true, password = "", motd = "" }) {
         super()
 
@@ -49,16 +62,16 @@ export default class TerrariaServer extends EventEmitter {
         })
     }
 
-    command(command) {
+    command(command: string) {
         if (!command) throw new Error('No command provided')
-        if (!this.ready) return new Error('The server is not started')
+        if (!this.ready) return;
 
         this.server.write(command + '\r')
 
-        return new Promise((resolve, reject) => {
-            const result = []
+        return new Promise<string>((resolve, reject) => {
+            const result: string[] = []
             let started = false
-            this.on('console', (data) => {
+            this.on('console', (data: string) => {
                 if (data.startsWith(':')) {
                     clearTimeout(timeout)
                     resolve(result.join(' ').replaceAll('', " "))
@@ -70,7 +83,7 @@ export default class TerrariaServer extends EventEmitter {
             })
 
             const timeout = setTimeout(() => {
-                reject('Timeout')
+                if (this.server) throw new Error('r')
             }, 5000)
         })
     }
@@ -103,31 +116,31 @@ export default class TerrariaServer extends EventEmitter {
         this.command('exit').catch(() => { })
     }
 
-    say(message) {
+    say(message: string) {
         if (!message) throw new Error('No message provided')
 
         this.command(`say ${message}`)
     }
 
     get players() {
-        if (!this.ready) return new Error('The server is not started')
+        if (!this.ready) return;
         return (async () => {
-            try {
-                return await new Promise(async (resolve) => {
-                    const reponse = await this.command('playing')
-                    let lines = reponse.startsWith("No players connected.") ? [] : reponse.split('\r').filter(line => line != '').map(line => line.trim())
-                    lines.pop()
+            return await new Promise<Player[]>(async (resolve, reject) => {
+                const reponse = await this.command('playing')
+                let lines = reponse.startsWith("No players connected.") ? [] : reponse.split('\r').filter(line => line != '').map(line => line.trim())
+                lines.pop()
 
-                    resolve(lines.map(line => ({ name: line.split('(')[0].trim(), ip: line.split('(')[1].split(')')[0] })))
-                });
-            } catch (e) {
-                return 0;
-            }
+                resolve(lines.map(line => ({ name: line.split('(')[0].trim(), ip: line.split('(')[1].split(')')[0] })))
+
+                setTimeout(() => {
+                    reject(new Error('No response'))
+                }, 2000)
+            });
         })();
     }
 
     get uptime () {
         if (!this.ready) return null
-        return Date.now() - this.readyTimestamp
+        return Date.now() - (this.readyTimestamp as number)
     }
 }
