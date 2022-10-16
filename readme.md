@@ -2,7 +2,7 @@
 ## Installation
 Please make sure you have [Python](https://www.python.org) and [Visual Studio](https://visualstudio.microsoft.com/) with C++ development
 
-You need to create folder to store a normal Terraria Server to executed
+You need to create a folder to store a normal Terraria Server to be executed
 
 ## Class: TerrariaServer
 TerrariaServer is a class that manages the terraria server itself, captures the process STDOUT
@@ -28,6 +28,7 @@ const server = new TerrariaServer({
 server.on('start', () => console.log('Server Started'))
 ```
 
+### Methods
 `server.start(): void`
 
 `server.stop(): void`
@@ -36,6 +37,7 @@ server.on('start', () => console.log('Server Started'))
 
 `server.say(message: string): void`
 
+### Events
 `server.on('start', () => void)`
 
 `server.on('stop', () => void)`
@@ -47,6 +49,17 @@ server.on('start', () => console.log('Server Started'))
 `server.on('join', (player: string) => void)`
 
 `server.on('leave', (player: string) => void)`
+
+### Properties
+`server.config: Config`
+
+`server.ready: boolean`
+
+`server.readyTimestamp: number | null`
+
+`server.uptime: number | null`
+
+`server.players: Promise<Player[]>`
 
 ## Interface: `Config`
 The config object is used to configure the Terraria server

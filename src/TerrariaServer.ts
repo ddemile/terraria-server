@@ -36,7 +36,7 @@ export class TerrariaServer extends EventEmitter {
     config: Config
     ready: boolean
     readyTimestamp: number | null
-    server: pty.IPty
+    private server: pty.IPty
     
     constructor(config: Config) {
         super()
