@@ -1,11 +1,10 @@
 /// <reference types="node" />
-import pty from "node-pty";
 import EventEmitter from "events";
 declare type File = `${string}.bat`;
-interface Player {
+declare type Player = {
     name: string;
     ip: string;
-}
+};
 export declare const defaultTerrariaServerConfig: Config;
 export interface Config {
     path: string;
@@ -21,7 +20,7 @@ export declare class TerrariaServer extends EventEmitter {
     config: Config;
     ready: boolean;
     readyTimestamp: number | null;
-    server: pty.IPty;
+    private server;
     constructor(config: Config);
     command(command: string): Promise<string>;
     start(): void;

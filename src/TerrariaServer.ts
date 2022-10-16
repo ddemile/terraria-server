@@ -5,7 +5,7 @@ let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
 type File = `${string}.bat`
 
-interface Player {
+type Player = {
     name: string,
     ip: string
 }
