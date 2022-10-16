@@ -17,13 +17,15 @@ Config: [Config](#interface-config)
 const server = new TerrariaServer({
     path: "./Server",
     file: "start-server.bat",
-    worldId: 1
+    worldId: 1,
     maxPlayers: 16,
     port: 7777,
     autoForwardPort: true,
     password: "",
     motd: ""
 })
+
+server.on('start', () => console.log('Server Started'))
 ```
 
 `server.start(): void`
