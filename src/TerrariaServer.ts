@@ -73,8 +73,8 @@ export class TerrariaServer extends EventEmitter {
                 this.emit('leave', data.split(' has left.')[0])
             }
             if (data.startsWith('<') && data.split('>')[1]) {
-                const message = data.split('>').splice(1).join('').trim()
-                const player = data.split('<')[1].split('>')[0]
+                const message = data.split('>').splice(1).map((element: string) => (element == '\r' || element == '') ? '>\r' : element).join('').trim()
+                const player = data.split('<')[1].split('>')[0] 
                 this.emit('message', message, player)
             }
         })
