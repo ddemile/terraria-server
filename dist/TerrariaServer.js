@@ -25,6 +25,7 @@ class TerrariaServer extends events_1.default {
     server;
     constructor(config) {
         super();
+        this.config = config;
         if (!config.path)
             throw new Error('No path provided');
         if (!config.file)

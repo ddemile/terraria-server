@@ -33,12 +33,11 @@ export interface Config {
 }
 
 export class TerrariaServer extends EventEmitter {
-    config: Config
     ready: boolean
     readyTimestamp: number | null
     private server: IPty
     
-    constructor(config: Config) {
+    constructor(public config: Config) {
         super()
 
         if (!config.path) throw new Error('No path provided')
