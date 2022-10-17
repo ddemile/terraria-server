@@ -36,7 +36,7 @@ export class TerrariaServer extends EventEmitter {
     ready: boolean
     readyTimestamp: number | null
     private server: IPty
-    
+
     constructor(public config: Config) {
         super()
 
@@ -45,7 +45,7 @@ export class TerrariaServer extends EventEmitter {
 
         this.config = {
             path: config.path || defaultTerrariaServerConfig.path,
-            file:config.file || defaultTerrariaServerConfig.file,
+            file: config.file || defaultTerrariaServerConfig.file,
             worldId: config.worldId || defaultTerrariaServerConfig.worldId,
             maxPlayers: config.maxPlayers || defaultTerrariaServerConfig.maxPlayers,
             port: config.port || defaultTerrariaServerConfig.port,
@@ -59,27 +59,29 @@ export class TerrariaServer extends EventEmitter {
 
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {
-                this.ready = true
-                this.emit('start')
+                this.ready = true;
+                this.emit('start');
             }
             if (data.trim().startsWith('Error Logging Enabled.') && this.ready) {
-                this.emit('stop')
+                this.emit('stop');
             }
             if (data.split(' has joined.')[1]) {
-                this.emit('join', data.split(' has joined.')[0])
+                this.emit('join', data.split(' has joined.')[0]);
             }
             if (data.split(' has left.')[1]) {
-                this.emit('leave', data.split(' has left.')[0])
+                this.emit('leave', data.split(' has left.')[0]);
             }
             if (data.startsWith('<') && data.split('>')[1]) {
-                const message = data.split('>').splice(1).map((element: string) => (element == '\r' || element == '') ? '>\r' : element).join('').trim()
-                const player = data.split('<')[1].split('>')[0] 
-                this.emit('message', message, player)
+                const dataArray = data.split('');
+                dataArray.splice(0, data.split('>')[0].length + 1);
+                const message = dataArray.join('').trim();
+                const player = data.split('<')[1].split('>')[0];
+                this.emit('message', message, player);
             }
         })
 
         this.on('start', () => {
-            if (this.config.motd != "") this.command(`motd ${this.config.motd}\r`) 
+            if (this.config.motd != "") this.command(`motd ${this.config.motd}\r`)
             this.readyTimestamp = Date.now()
         })
     }
@@ -161,7 +163,7 @@ export class TerrariaServer extends EventEmitter {
         })();
     }
 
-    get uptime () {
+    get uptime() {
         if (!this.ready) return null
         return Date.now() - (this.readyTimestamp as number)
     }

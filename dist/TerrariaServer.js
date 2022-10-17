@@ -58,7 +58,9 @@ class TerrariaServer extends events_1.default {
                 this.emit('leave', data.split(' has left.')[0]);
             }
             if (data.startsWith('<') && data.split('>')[1]) {
-                const message = data.split('>').splice(1).map((element) => (element == '\r' || element == '') ? '>\r' : element).join('').trim();
+                const dataArray = data.split('');
+                dataArray.splice(0, data.split('>')[0].length + 1);
+                const message = dataArray.join('').trim();
                 const player = data.split('<')[1].split('>')[0];
                 this.emit('message', message, player);
             }
