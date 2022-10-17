@@ -90,7 +90,7 @@ class TerrariaServer extends events_1.default {
             });
             const timeout = setTimeout(() => {
                 if (this.server)
-                    throw new Error('r');
+                    reject(new Error('Timeout'));
             }, 5000);
         });
     }

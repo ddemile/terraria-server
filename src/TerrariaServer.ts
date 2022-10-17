@@ -105,7 +105,7 @@ export class TerrariaServer extends EventEmitter {
             })
 
             const timeout = setTimeout(() => {
-                if (this.server) throw new Error('r')
+                if (this.server) reject(new Error('Timeout'))
             }, 5000)
         })
     }
