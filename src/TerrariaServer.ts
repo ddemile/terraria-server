@@ -1,5 +1,5 @@
 import os from "os";
-import pty from "node-pty";
+import { spawn, IPty } from "node-pty";
 import EventEmitter from "events";
 let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
@@ -36,7 +36,7 @@ export class TerrariaServer extends EventEmitter {
     config: Config
     ready: boolean
     readyTimestamp: number | null
-    private server: pty.IPty
+    private server: IPty
     
     constructor(config: Config) {
         super()
@@ -112,7 +112,7 @@ export class TerrariaServer extends EventEmitter {
     }
 
     start() {
-        this.server = pty.spawn(shell, [], {
+        this.server = spawn(shell, [], {
             name: 'Terraria',
             cols: 1000,
             rows: 500,

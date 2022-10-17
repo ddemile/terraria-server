@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TerrariaServer = exports.defaultTerrariaServerConfig = void 0;
 const os_1 = __importDefault(require("os"));
-const node_pty_1 = __importDefault(require("node-pty"));
+const node_pty_1 = require("node-pty");
 const events_1 = __importDefault(require("events"));
 let shell = os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
@@ -94,7 +94,7 @@ class TerrariaServer extends events_1.default {
         });
     }
     start() {
-        this.server = node_pty_1.default.spawn(shell, [], {
+        this.server = (0, node_pty_1.spawn)(shell, [], {
             name: 'Terraria',
             cols: 1000,
             rows: 500,
