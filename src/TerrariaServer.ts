@@ -33,8 +33,9 @@ export interface Config {
 }
 
 export class TerrariaServer extends EventEmitter {
-    ready: boolean
-    readyTimestamp: number | null
+    ready: boolean = false
+    readyTimestamp: number | null = null
+    private events: string[] = []
     private server: IPty
 
     constructor(public config: Config) {
@@ -53,16 +54,19 @@ export class TerrariaServer extends EventEmitter {
             password: config.password || defaultTerrariaServerConfig.password,
             motd: config.motd || defaultTerrariaServerConfig.motd
         }
-        this.ready = false
-        this.readyTimestamp = null
-        this.setMaxListeners(12)
+        this.setMaxListeners(15)
 
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {
                 this.ready = true;
+                this.events.push('start')
                 this.emit('start');
             }
             if (data.trim().startsWith('Error Logging Enabled.') && this.ready) {
+                this.server.kill();
+                this.ready = false;
+                this.readyTimestamp = null;
+                this.events.push('stop')
                 this.emit('stop');
             }
             if (data.split(' has joined.')[1]) {
@@ -95,17 +99,19 @@ export class TerrariaServer extends EventEmitter {
         return new Promise<string>((resolve, reject) => {
             const result: string[] = []
             let started = false
-            this.on('console', (data: string) => {
+            
+            const listener = (data: string) => {
                 if (data.startsWith(':')) {
                     clearTimeout(timeout)
+                    this.removeListener('console', listener)
                     resolve(result.join(' ').replaceAll('', " "))
                 }
 
                 if (started) result.push(data)
 
                 if (data.split(command)[1] != undefined) started = true
-            })
-
+            }
+            this.on('console', listener)
             const timeout = setTimeout(() => {
                 if (this.server) reject(new Error('Timeout'))
             }, 5000)
@@ -133,11 +139,44 @@ export class TerrariaServer extends EventEmitter {
         this.server.onData((data) => {
             data.split('\n').forEach(line => { if (line != "") this.emit('console', line) });
         });
+
+        return new Promise<void>((resolve, reject) => {
+            const interval = setInterval(() => {
+                if (this.events.includes('start')) {
+                    this.events.splice(this.events.indexOf('start'), 1)
+                    clearTimeout(timeout)
+                    clearInterval(interval)
+                    resolve()
+                }
+            }, 100)
+            const timeout = setTimeout(() => {
+                reject(new Error('Timeout'))
+            }, 15000)
+        })
     }
 
     stop() {
         if (!this.ready) throw new Error('The server is not started')
         this.command('exit').catch(() => { })
+        return new Promise<void>((resolve, reject) => {
+            const interval = setInterval(() => {
+                if (this.events.includes('stop')) {
+                    this.events.splice(this.events.indexOf('stop'), 1)
+                    clearTimeout(timeout)
+                    clearInterval(interval)
+                    resolve()
+                }
+            }, 100)
+            const timeout = setTimeout(() => {
+                reject(new Error('Timeout'))
+            }, 5000)
+        })
+    }
+
+    async restart() {
+        if (!this.ready) throw new Error('The server is not started')
+        await this.stop().catch(() => { })
+        this.start()
     }
 
     say(message: string) {

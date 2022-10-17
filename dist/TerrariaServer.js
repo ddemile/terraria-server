@@ -20,8 +20,9 @@ exports.defaultTerrariaServerConfig = {
 };
 class TerrariaServer extends events_1.default {
     config;
-    ready;
-    readyTimestamp;
+    ready = false;
+    readyTimestamp = null;
+    events = [];
     server;
     constructor(config) {
         super();
@@ -40,15 +41,18 @@ class TerrariaServer extends events_1.default {
             password: config.password || exports.defaultTerrariaServerConfig.password,
             motd: config.motd || exports.defaultTerrariaServerConfig.motd
         };
-        this.ready = false;
-        this.readyTimestamp = null;
-        this.setMaxListeners(12);
+        this.setMaxListeners(15);
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {
                 this.ready = true;
+                this.events.push('start');
                 this.emit('start');
             }
             if (data.trim().startsWith('Error Logging Enabled.') && this.ready) {
+                this.server.kill();
+                this.ready = false;
+                this.readyTimestamp = null;
+                this.events.push('stop');
                 this.emit('stop');
             }
             if (data.split(' has joined.')[1]) {
@@ -80,16 +84,18 @@ class TerrariaServer extends events_1.default {
         return new Promise((resolve, reject) => {
             const result = [];
             let started = false;
-            this.on('console', (data) => {
+            const listener = (data) => {
                 if (data.startsWith(':')) {
                     clearTimeout(timeout);
+                    this.removeListener('console', listener);
                     resolve(result.join(' ').replaceAll('', " "));
                 }
                 if (started)
                     result.push(data);
                 if (data.split(command)[1] != undefined)
                     started = true;
-            });
+            };
+            this.on('console', listener);
             const timeout = setTimeout(() => {
                 if (this.server)
                     reject(new Error('Timeout'));
@@ -115,11 +121,43 @@ class TerrariaServer extends events_1.default {
             data.split('\n').forEach(line => { if (line != "")
                 this.emit('console', line); });
         });
+        return new Promise((resolve, reject) => {
+            const interval = setInterval(() => {
+                if (this.events.includes('start')) {
+                    this.events.splice(this.events.indexOf('start'), 1);
+                    clearTimeout(timeout);
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+            const timeout = setTimeout(() => {
+                reject(new Error('Timeout'));
+            }, 15000);
+        });
     }
     stop() {
         if (!this.ready)
             throw new Error('The server is not started');
         this.command('exit').catch(() => { });
+        return new Promise((resolve, reject) => {
+            const interval = setInterval(() => {
+                if (this.events.includes('stop')) {
+                    this.events.splice(this.events.indexOf('stop'), 1);
+                    clearTimeout(timeout);
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+            const timeout = setTimeout(() => {
+                reject(new Error('Timeout'));
+            }, 5000);
+        });
+    }
+    async restart() {
+        if (!this.ready)
+            throw new Error('The server is not started');
+        await this.stop().catch(() => { });
+        this.start();
     }
     say(message) {
         if (!message)

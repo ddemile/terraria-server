@@ -20,11 +20,13 @@ export declare class TerrariaServer extends EventEmitter {
     config: Config;
     ready: boolean;
     readyTimestamp: number | null;
+    private events;
     private server;
     constructor(config: Config);
     command(command: string): Promise<string>;
-    start(): void;
-    stop(): void;
+    start(): Promise<void>;
+    stop(): Promise<void>;
+    restart(): Promise<void>;
     say(message: string): void;
     get players(): Promise<Player[]>;
     get uptime(): number;

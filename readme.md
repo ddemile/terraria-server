@@ -13,6 +13,10 @@ TerrariaServer is a class that manages the terraria server itself, captures the 
 
 ```js
 import { TerrariaServer } from 'terraria-server';
+
+// Or
+
+const { TerrariaServer } = require('terraria-server')
 ```
 
 Config: [Config](#interface-config)
@@ -33,9 +37,11 @@ server.on('start', () => console.log('Server Started'))
 ```
 
 ### Methods
-`server.start(): void`
+`server.start(): Promise<void>`
 
-`server.stop(): void`
+`server.stop(): Promise<void>`
+
+`server.restart(): Promise<void>`
 
 `server.command(command: string): Promise<string>`
 
