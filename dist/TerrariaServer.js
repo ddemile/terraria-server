@@ -1,8 +1,14 @@
-import os from "os";
-import pty from "node-pty";
-import EventEmitter from "events";
-let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
-export const defaultTerrariaServerConfig = {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TerrariaServer = exports.defaultTerrariaServerConfig = void 0;
+const os_1 = __importDefault(require("os"));
+const node_pty_1 = __importDefault(require("node-pty"));
+const events_1 = __importDefault(require("events"));
+let shell = os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
+exports.defaultTerrariaServerConfig = {
     path: 'Server',
     file: 'start-server.bat',
     worldId: 1,
@@ -12,7 +18,7 @@ export const defaultTerrariaServerConfig = {
     password: "",
     motd: ""
 };
-export class TerrariaServer extends EventEmitter {
+class TerrariaServer extends events_1.default {
     config;
     ready;
     readyTimestamp;
@@ -24,14 +30,14 @@ export class TerrariaServer extends EventEmitter {
         if (!config.file)
             throw new Error('No file provided');
         this.config = {
-            path: config.path || defaultTerrariaServerConfig.path,
-            file: config.file || defaultTerrariaServerConfig.file,
-            worldId: config.worldId || defaultTerrariaServerConfig.worldId,
-            maxPlayers: config.maxPlayers || defaultTerrariaServerConfig.maxPlayers,
-            port: config.port || defaultTerrariaServerConfig.port,
-            autoForwardPort: config.autoForwardPort || defaultTerrariaServerConfig.autoForwardPort,
-            password: config.password || defaultTerrariaServerConfig.password,
-            motd: config.motd || defaultTerrariaServerConfig.motd
+            path: config.path || exports.defaultTerrariaServerConfig.path,
+            file: config.file || exports.defaultTerrariaServerConfig.file,
+            worldId: config.worldId || exports.defaultTerrariaServerConfig.worldId,
+            maxPlayers: config.maxPlayers || exports.defaultTerrariaServerConfig.maxPlayers,
+            port: config.port || exports.defaultTerrariaServerConfig.port,
+            autoForwardPort: config.autoForwardPort || exports.defaultTerrariaServerConfig.autoForwardPort,
+            password: config.password || exports.defaultTerrariaServerConfig.password,
+            motd: config.motd || exports.defaultTerrariaServerConfig.motd
         };
         this.ready = false;
         this.readyTimestamp = null;
@@ -88,7 +94,7 @@ export class TerrariaServer extends EventEmitter {
         });
     }
     start() {
-        this.server = pty.spawn(shell, [], {
+        this.server = node_pty_1.default.spawn(shell, [], {
             name: 'Terraria',
             cols: 1000,
             rows: 500,
@@ -138,3 +144,4 @@ export class TerrariaServer extends EventEmitter {
         return Date.now() - this.readyTimestamp;
     }
 }
+exports.TerrariaServer = TerrariaServer;

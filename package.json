@@ -22,7 +22,6 @@
   "dependencies": {
     "node-pty": "^0.10.1"
   },
-  "type": "module",
   "devDependencies": {
     "@types/node": "^18.11.0"
   }
