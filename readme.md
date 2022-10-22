@@ -3,9 +3,9 @@
 Please make sure you have [Python](https://www.python.org) and [Visual Studio](https://visualstudio.microsoft.com/) with C++ development
 
 Install a Terraria server :
-1. Download a Terraria server ([Server for 1.4.4.5](https://terraria.org/api/download/pc-dedicated-server/terraria-server-1445.zip))
+1. Download a Terraria server ([Server for Terraria](https://terraria.fandom.com/wiki/Server#Downloads))
 2. Extract the zip
-3. Go to 1445
+3. Go to the only folder
 4. Take the content of Windows and drop it into a folder in your project
 
 ## Class: TerrariaServer
