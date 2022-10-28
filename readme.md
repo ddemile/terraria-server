@@ -23,7 +23,7 @@ Config: [Config](#interface-config)
 
 ```js
 const server = new TerrariaServer({
-    path: "./Server",
+    path: "./server",
     file: "start-server.bat",
     worldId: 1,
     maxPlayers: 16,

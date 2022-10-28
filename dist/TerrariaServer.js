@@ -9,7 +9,7 @@ const node_pty_1 = require("node-pty");
 const events_1 = __importDefault(require("events"));
 let shell = os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
-    path: 'Server',
+    path: 'server',
     file: 'start-server.bat',
     worldId: 1,
     maxPlayers: 16,
@@ -131,8 +131,8 @@ class TerrariaServer extends events_1.default {
                 }
             }, 100);
             const timeout = setTimeout(() => {
-                reject(new Error('Timeout'));
-            }, 15000);
+                reject(new Error('The server did not start within the time limit'));
+            }, 45000);
         });
     }
     stop() {

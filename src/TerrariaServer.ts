@@ -11,7 +11,7 @@ type Player = {
 }
 
 export const defaultTerrariaServerConfig: Config = {
-    path: 'Server',
+    path: 'server',
     file: 'start-server.bat',
     worldId: 1,
     maxPlayers: 16,
@@ -151,7 +151,7 @@ export class TerrariaServer extends EventEmitter {
             }, 100)
             const timeout = setTimeout(() => {
                 reject(new Error('Timeout'))
-            }, 15000)
+            }, 45000)
         })
     }
 
