@@ -32,7 +32,7 @@ class TerrariaServer extends events_1.default {
             throw new Error('No path provided');
         if (!config.file)
             throw new Error('No file provided');
-        this.config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultTerrariaServerConfig);
+        config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultTerrariaServerConfig);
         this.setMaxListeners(15);
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {

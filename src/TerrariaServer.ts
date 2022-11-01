@@ -33,7 +33,7 @@ export class TerrariaServer extends EventEmitter {
         if (!config.path) throw new Error('No path provided')
         if (!config.file) throw new Error('No file provided')
 
-        this.config = defaultsDeep(config, defaultTerrariaServerConfig)
+        config = defaultsDeep(config, defaultTerrariaServerConfig)
         
         this.setMaxListeners(15)
 
