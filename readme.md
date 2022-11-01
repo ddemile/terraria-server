@@ -33,6 +33,8 @@ const server = new TerrariaServer({
     motd: ""
 })
 
+server.start()
+
 server.on('start', () => console.log('Server Started'))
 ```
 
