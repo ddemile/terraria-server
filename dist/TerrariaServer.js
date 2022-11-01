@@ -7,6 +7,7 @@ exports.TerrariaServer = exports.defaultTerrariaServerConfig = void 0;
 const os_1 = __importDefault(require("os"));
 const node_pty_1 = require("node-pty");
 const events_1 = __importDefault(require("events"));
+const lodash_defaultsdeep_1 = __importDefault(require("lodash.defaultsdeep"));
 let shell = os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
     path: 'server',
@@ -24,23 +25,14 @@ class TerrariaServer extends events_1.default {
     readyTimestamp = null;
     events = [];
     server;
-    constructor(config) {
+    constructor(config = {}) {
         super();
         this.config = config;
         if (!config.path)
             throw new Error('No path provided');
         if (!config.file)
             throw new Error('No file provided');
-        this.config = {
-            path: config.path || exports.defaultTerrariaServerConfig.path,
-            file: config.file || exports.defaultTerrariaServerConfig.file,
-            worldId: config.worldId || exports.defaultTerrariaServerConfig.worldId,
-            maxPlayers: config.maxPlayers || exports.defaultTerrariaServerConfig.maxPlayers,
-            port: config.port || exports.defaultTerrariaServerConfig.port,
-            autoForwardPort: config.autoForwardPort || exports.defaultTerrariaServerConfig.autoForwardPort,
-            password: config.password || exports.defaultTerrariaServerConfig.password,
-            motd: config.motd || exports.defaultTerrariaServerConfig.motd
-        };
+        this.config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultTerrariaServerConfig);
         this.setMaxListeners(15);
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {
@@ -131,7 +123,7 @@ class TerrariaServer extends events_1.default {
                 }
             }, 100);
             const timeout = setTimeout(() => {
-                reject(new Error('The server did not start within the time limit'));
+                reject(new Error('Timeout'));
             }, 45000);
         });
     }

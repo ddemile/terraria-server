@@ -1,28 +1,18 @@
 /// <reference types="node" />
 import EventEmitter from "events";
-declare type File = `${string}.bat`;
+import { Config, DeepPartial } from './Config';
 declare type Player = {
     name: string;
     ip: string;
 };
 export declare const defaultTerrariaServerConfig: Config;
-export interface Config {
-    path: string;
-    file: File;
-    worldId: number;
-    maxPlayers?: number;
-    port?: number;
-    autoForwardPort?: boolean;
-    password?: string;
-    motd?: string;
-}
 export declare class TerrariaServer extends EventEmitter {
-    config: Config;
+    config: DeepPartial<Config>;
     ready: boolean;
     readyTimestamp: number | null;
     private events;
     private server;
-    constructor(config: Config);
+    constructor(config?: DeepPartial<Config>);
     command(command: string): Promise<string>;
     start(): Promise<void>;
     stop(): Promise<void>;

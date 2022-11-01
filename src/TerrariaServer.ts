@@ -1,9 +1,9 @@
 import os from "os";
 import { spawn, IPty } from "node-pty";
 import EventEmitter from "events";
+import { Config, DeepPartial } from './Config'
+import defaultsDeep from 'lodash.defaultsdeep'
 let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
-
-type File = `${string}.bat`
 
 type Player = {
     name: string,
@@ -21,39 +21,20 @@ export const defaultTerrariaServerConfig: Config = {
     motd: ""
 }
 
-export interface Config {
-    path: string
-    file: File
-    worldId: number
-    maxPlayers?: number
-    port?: number
-    autoForwardPort?: boolean
-    password?: string
-    motd?: string
-}
-
 export class TerrariaServer extends EventEmitter {
     ready: boolean = false
     readyTimestamp: number | null = null
     private events: string[] = []
     private server: IPty
 
-    constructor(public config: Config) {
+    constructor(public config: DeepPartial<Config> = {}) {
         super()
 
         if (!config.path) throw new Error('No path provided')
         if (!config.file) throw new Error('No file provided')
 
-        this.config = {
-            path: config.path || defaultTerrariaServerConfig.path,
-            file: config.file || defaultTerrariaServerConfig.file,
-            worldId: config.worldId || defaultTerrariaServerConfig.worldId,
-            maxPlayers: config.maxPlayers || defaultTerrariaServerConfig.maxPlayers,
-            port: config.port || defaultTerrariaServerConfig.port,
-            autoForwardPort: config.autoForwardPort || defaultTerrariaServerConfig.autoForwardPort,
-            password: config.password || defaultTerrariaServerConfig.password,
-            motd: config.motd || defaultTerrariaServerConfig.motd
-        }
+        this.config = defaultsDeep(config, defaultTerrariaServerConfig)
+        
         this.setMaxListeners(15)
 
         this.on('console', (data) => {
