@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import EventEmitter from "events";
+import EventEmitter from "node:events";
 import { Config, DeepPartial } from './Config';
 declare type Player = {
     name: string;

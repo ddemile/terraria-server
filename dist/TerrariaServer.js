@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TerrariaServer = exports.defaultTerrariaServerConfig = void 0;
-const os_1 = __importDefault(require("os"));
+const node_os_1 = __importDefault(require("node:os"));
+const node_events_1 = __importDefault(require("node:events"));
 const node_pty_1 = require("node-pty");
-const events_1 = __importDefault(require("events"));
 const lodash_defaultsdeep_1 = __importDefault(require("lodash.defaultsdeep"));
-let shell = os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
+let shell = node_os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
     path: 'server',
     file: 'start-server.bat',
@@ -19,7 +19,7 @@ exports.defaultTerrariaServerConfig = {
     password: "",
     motd: ""
 };
-class TerrariaServer extends events_1.default {
+class TerrariaServer extends node_events_1.default {
     config;
     ready = false;
     readyTimestamp = null;

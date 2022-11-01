@@ -1,6 +1,6 @@
-import os from "os";
+import os from "node:os";
+import EventEmitter from "node:events";
 import { spawn, IPty } from "node-pty";
-import EventEmitter from "events";
 import { Config, DeepPartial } from './Config'
 import defaultsDeep from 'lodash.defaultsdeep'
 let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
