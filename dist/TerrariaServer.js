@@ -110,7 +110,7 @@ class TerrariaServer extends node_events_1.default {
         this.server.write((this.config.autoForwardPort == true ? "y" : "n") + '\r');
         this.server.write(this.config.password + '\r');
         this.server.onData((data) => {
-            data.split('\n').forEach(line => { if (line != "")
+            data.split('\n').filter(line => line != "[K\r").forEach(line => { if (line != "")
                 this.emit('console', line); });
         });
         return new Promise((resolve, reject) => {
