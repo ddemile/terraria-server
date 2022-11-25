@@ -9,7 +9,7 @@ export interface Config {
     autoForwardPort?: boolean
     password?: string
     motd?: string
-};
+}
 
 export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P]>;
