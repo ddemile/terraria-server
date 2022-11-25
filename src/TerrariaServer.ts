@@ -3,7 +3,7 @@ import EventEmitter from "node:events";
 import { spawn, IPty } from "node-pty";
 import { Config, DeepPartial } from './Config'
 import defaultsDeep from 'lodash.defaultsdeep'
-let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
+const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
 type Player = {
     name: string,
@@ -171,7 +171,7 @@ export class TerrariaServer extends EventEmitter {
         return (async () => {
             return await new Promise<Player[]>(async (resolve, reject) => {
                 const response = await this.command('playing')
-                let lines = response.startsWith("No players connected.") ? [] : response.split('\r').filter(line => line != '').map(line => line.trim())
+                const lines = response.startsWith("No players connected.") ? [] : response.split('\r').filter(line => line != '').map(line => line.trim())
                 lines.pop()
 
                 resolve(lines.map(line => ({ name: line.split('(')[0].trim(), ip: line.split('(')[1].split(')')[0] })))
