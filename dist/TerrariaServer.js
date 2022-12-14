@@ -176,7 +176,7 @@ class TerrariaServer extends node_events_1.default {
         return (async () => {
             return await new Promise(async (resolve, reject) => {
                 const response = await this.command('playing');
-                let lines = response.startsWith("No players connected.") ? [] : response.split('\r').filter(line => line != '').map(line => line.trim());
+                const lines = response.startsWith("No players connected.") ? [] : response.split('\r').filter(line => line != '').map(line => line.trim());
                 lines.pop();
                 resolve(lines.map(line => ({ name: line.split('(')[0].trim(), ip: line.split('(')[1].split(')')[0] })));
                 setTimeout(() => {
