@@ -2,7 +2,7 @@
 ## Installation
 Please make sure you have [Python](https://www.python.org) and [Visual Studio](https://visualstudio.microsoft.com/) with C++ development
 
-Install a Terraria server :
+If you want to use a custom server :
 1. Download a Terraria server ([Server for Terraria](https://terraria.fandom.com/wiki/Server#Downloads))
 2. Extract the zip
 3. Go to the only folder
@@ -22,6 +22,24 @@ const { TerrariaServer } = require('terraria-server')
 Config: [Config](#interface-config)
 
 ```js
+// Without custom server
+const server = new TerrariaServer({
+    version: "1.4.4.9",
+    worldId: 1,
+    maxPlayers: 16,
+    port: 7777,
+    autoForwardPort: true,
+    password: "",
+    motd: ""
+})
+
+await server.download()
+
+server.start()
+
+server.on('start', () => console.log('Server Started'))
+
+// With custom server
 const server = new TerrariaServer({
     path: "./server",
     file: "start-server.bat",
@@ -39,6 +57,8 @@ server.on('start', () => console.log('Server Started'))
 ```
 
 ### Methods
+`server.download(): Promise<void>`
+
 `server.start(): Promise<void>`
 
 `server.stop(): Promise<void>`
@@ -78,6 +98,7 @@ The config object is used to configure the Terraria server
 
 ```js
 const config = {
+    version: TerrariaVersion,
     path: string,
     file: string,
     worldId: number,

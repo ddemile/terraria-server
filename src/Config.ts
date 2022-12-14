@@ -1,8 +1,10 @@
-type File = `${string}.bat`
+type File = `${string}.bat` 
+type TerrariaVersion = `${number}.${number}.${number}` | `${number}.${number}.${number}.${number}`
 
 export interface Config {
-    path: string
-    file: File
+    version?: TerrariaVersion
+    path?: string
+    file?: File
     worldId: number
     maxPlayers?: number
     port?: number

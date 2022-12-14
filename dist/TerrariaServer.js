@@ -8,8 +8,12 @@ const node_os_1 = __importDefault(require("node:os"));
 const node_events_1 = __importDefault(require("node:events"));
 const node_pty_1 = require("node-pty");
 const lodash_defaultsdeep_1 = __importDefault(require("lodash.defaultsdeep"));
+const functions_1 = require("./functions");
+const adm_zip_1 = __importDefault(require("adm-zip"));
+const promises_1 = require("node:fs/promises");
 let shell = node_os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
+    version: '1.4.4.9',
     path: 'server',
     file: 'start-server.bat',
     worldId: 1,
@@ -28,10 +32,10 @@ class TerrariaServer extends node_events_1.default {
     constructor(config = {}) {
         super();
         this.config = config;
-        if (!config.path)
-            throw new Error('No path provided');
-        if (!config.file)
-            throw new Error('No file provided');
+        if (!config.path && !config.file && !config.version)
+            throw new Error('No version or path provided');
+        if (config.path && config.file && config.version)
+            throw new Error('A path and a version were provided a the same time');
         config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultTerrariaServerConfig);
         this.setMaxListeners(15);
         this.on('console', (data) => {
@@ -66,6 +70,16 @@ class TerrariaServer extends node_events_1.default {
                 this.command(`motd ${this.config.motd}\r`);
             this.readyTimestamp = Date.now();
         });
+    }
+    async download() {
+        console.log('dd');
+        if (!this.config.version)
+            throw new Error('No version provided');
+        await (0, functions_1.download)(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download'); });
+        const zip = new adm_zip_1.default(`${__dirname}/server.zip`);
+        zip.extractAllTo(`${__dirname}/versions`);
+        await (0, promises_1.unlink)(`${__dirname}/server.zip`);
+        this.config.path = `${__dirname}/versions/${this.config.version.replaceAll('.', '')}/Windows/`;
     }
     command(command) {
         if (!command)

@@ -1,8 +1,11 @@
 import os from "node:os";
 import EventEmitter from "node:events";
 import { spawn, IPty } from "node-pty";
-import { Config, DeepPartial } from './Config'
-import defaultsDeep from 'lodash.defaultsdeep'
+import { Config, DeepPartial } from './Config';
+import defaultsDeep from 'lodash.defaultsdeep';
+import { download } from "./functions";
+import Zip from 'adm-zip';
+import { unlink } from "node:fs/promises";
 let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
 type Player = {
@@ -11,6 +14,7 @@ type Player = {
 }
 
 export const defaultTerrariaServerConfig: Config = {
+    version: '1.4.4.9',
     path: 'server',
     file: 'start-server.bat',
     worldId: 1,
@@ -30,14 +34,14 @@ export class TerrariaServer extends EventEmitter {
     constructor(public config: DeepPartial<Config> = {}) {
         super()
 
-        if (!config.path) throw new Error('No path provided')
-        if (!config.file) throw new Error('No file provided')
+        if (!config.path && !config.file && !config.version) throw new Error('No version or path provided')
+        if (config.path && config.file && config.version) throw new Error('A path and a version were provided a the same time')
 
         config = defaultsDeep(config, defaultTerrariaServerConfig)
         
         this.setMaxListeners(15)
 
-        this.on('console', (data) => {
+        this.on('console', (data: string) => {
             if (data.trim().startsWith('Server started')) {
                 this.ready = true;
                 this.events.push('start')
@@ -71,6 +75,22 @@ export class TerrariaServer extends EventEmitter {
         })
     }
 
+    async download() {
+        console.log('dd')
+
+        if (!this.config.version) throw new Error('No version provided')
+
+        await download(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download') })
+
+        const zip = new Zip(`${__dirname}/server.zip`)
+
+        zip.extractAllTo(`${__dirname}/versions`)
+        
+        await unlink(`${__dirname}/server.zip`)
+
+        this.config.path = `${__dirname}/versions/${this.config.version.replaceAll('.', '')}/Windows/`
+    }
+
     command(command: string) {
         if (!command) throw new Error('No command provided')
         if (!this.ready) return;
@@ -79,7 +99,7 @@ export class TerrariaServer extends EventEmitter {
 
         return new Promise<string>((resolve, reject) => {
             const result: string[] = []
-            let started = false
+            let started: boolean = false
             
             const listener = (data: string) => {
                 if (data.startsWith(':')) {

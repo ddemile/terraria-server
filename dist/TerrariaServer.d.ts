@@ -13,6 +13,7 @@ export declare class TerrariaServer extends EventEmitter {
     private events;
     private server;
     constructor(config?: DeepPartial<Config>);
+    download(): Promise<void>;
     command(command: string): Promise<string>;
     start(): Promise<void>;
     stop(): Promise<void>;
