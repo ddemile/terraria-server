@@ -6,7 +6,7 @@ import defaultsDeep from 'lodash.defaultsdeep';
 import { download } from "./functions";
 import Zip from 'adm-zip';
 import { unlink } from "node:fs/promises";
-let shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
+const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
 type Player = {
     name: string,
