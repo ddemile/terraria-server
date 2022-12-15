@@ -1,6 +1,6 @@
 {
   "name": "terraria-server",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A package to manage a Terraria server with js",
   "main": "./dist/index.js",
   "scripts": {
