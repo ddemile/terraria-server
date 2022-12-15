@@ -39,8 +39,6 @@ export class TerrariaServer extends EventEmitter {
 
         config = defaultsDeep(config, defaultTerrariaServerConfig)
         
-        this.setMaxListeners(15)
-
         this.on('console', (data: string) => {
             if (data.trim().startsWith('Server started')) {
                 this.ready = true;
