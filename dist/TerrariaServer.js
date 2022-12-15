@@ -72,7 +72,6 @@ class TerrariaServer extends node_events_1.default {
         });
     }
     async download() {
-        console.log('dd');
         if (!this.config.version)
             throw new Error('No version provided');
         await (0, functions_1.download)(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download'); });

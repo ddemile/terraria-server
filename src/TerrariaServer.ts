@@ -76,8 +76,6 @@ export class TerrariaServer extends EventEmitter {
     }
 
     async download() {
-        console.log('dd')
-
         if (!this.config.version) throw new Error('No version provided')
 
         await download(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download') })
