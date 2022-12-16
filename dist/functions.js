@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.download = void 0;
-const https_1 = __importDefault(require("https"));
-const fs_1 = __importDefault(require("fs"));
+const node_https_1 = __importDefault(require("node:https"));
+const node_fs_1 = __importDefault(require("node:fs"));
 async function download(url, targetFile) {
     return await new Promise((resolve, reject) => {
-        https_1.default.get(url, response => {
+        node_https_1.default.get(url, response => {
             const code = response.statusCode ?? 0;
             if (code >= 400) {
                 return reject(new Error(response.statusMessage));
@@ -19,7 +19,7 @@ async function download(url, targetFile) {
             }
             console.log(response);
             // save the file to disk
-            const fileWriter = fs_1.default
+            const fileWriter = node_fs_1.default
                 .createWriteStream(targetFile)
                 .on('finish', () => {
                 resolve();

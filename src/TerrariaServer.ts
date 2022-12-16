@@ -200,7 +200,7 @@ export class TerrariaServer extends EventEmitter {
     }
 
     get uptime() {
-        if (!this.ready) return null
-        return Date.now() - (this.readyTimestamp as number)
+        if (!this.ready || !this.readyTimestamp) return null
+        return Date.now() - this.readyTimestamp
     }
 }

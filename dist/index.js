@@ -15,4 +15,4 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./TerrariaServer.js"), exports);
-__exportStar(require("./Config"), exports);
+__exportStar(require("./Config.js"), exports);

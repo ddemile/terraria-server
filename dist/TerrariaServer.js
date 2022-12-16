@@ -11,7 +11,7 @@ const lodash_defaultsdeep_1 = __importDefault(require("lodash.defaultsdeep"));
 const functions_1 = require("./functions");
 const adm_zip_1 = __importDefault(require("adm-zip"));
 const promises_1 = require("node:fs/promises");
-let shell = node_os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
+const shell = node_os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
     version: '1.4.4.9',
     path: 'server',
@@ -37,7 +37,6 @@ class TerrariaServer extends node_events_1.default {
         if (config.path && config.file && config.version)
             throw new Error('A path and a version were provided a the same time');
         config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultTerrariaServerConfig);
-        this.setMaxListeners(15);
         this.on('console', (data) => {
             if (data.trim().startsWith('Server started')) {
                 this.ready = true;
@@ -185,7 +184,7 @@ class TerrariaServer extends node_events_1.default {
         })();
     }
     get uptime() {
-        if (!this.ready)
+        if (!this.ready || !this.readyTimestamp)
             return null;
         return Date.now() - this.readyTimestamp;
     }

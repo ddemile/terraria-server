@@ -1,2 +1,2 @@
 export * from './TerrariaServer.js';
-export * from './Config';
+export * from './Config.js';

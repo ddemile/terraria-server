@@ -1,5 +1,5 @@
 type File = `${string}.bat` 
-type TerrariaVersion = `${number}.${number}.${number}` | `${number}.${number}.${number}.${number}`
+type TerrariaVersion = `${number}.${number}.${number}` | `${number}.${number}.${number}.${number}` | `${number}.${number}.${number}.${number}.${number}`
 
 export interface Config {
     version?: TerrariaVersion
