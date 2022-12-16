@@ -12,7 +12,9 @@
     "url": "git+https://github.com/ddemile/terraria-server.git"
   },
   "keywords": [
-    "terraria"
+    "terraria",
+    "server",
+    "terraria-server"
   ],
   "author": "ddemile",
   "license": "ISC",
