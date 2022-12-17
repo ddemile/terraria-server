@@ -15,8 +15,6 @@ export async function download (url: string, targetFile: string): Promise<void> 
                 return download(response.headers.location, targetFile)
             }
 
-            console.log(response)
-
             // save the file to disk
             const fileWriter = fs
                 .createWriteStream(targetFile)

@@ -17,7 +17,6 @@ async function download(url, targetFile) {
             if (code > 300 && code < 400 && !!response.headers.location) {
                 return download(response.headers.location, targetFile);
             }
-            console.log(response);
             // save the file to disk
             const fileWriter = node_fs_1.default
                 .createWriteStream(targetFile)
