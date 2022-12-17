@@ -97,17 +97,25 @@ server.on('start', () => console.log('Server Started'))
 The config object is used to configure the Terraria server
 
 ```js
-const config = {
-    version: TerrariaVersion,
-    path: string,
-    file: string,
-    worldId: number,
-    maxPlayers: number,
-    port: number,
-    autoForwardPort: boolean,
-    password: string,
-    motd: string
+interface Config {
+    version?: TerrariaVersion
+    path?: string
+    file?: File
+    worldId: number
+    maxPlayers?: number
+    port?: number
+    autoForwardPort?: boolean
+    password?: string
+    motd?: string
 }
+```
 
-new TerrariaServer(config)
+## Interface: `DownloadConfig`
+The config object is used to configure the Terraria server
+
+```js
+interface DownloadConfig {
+    removeOther?: boolean
+    alwaysDownloadCurrent?: boolean
+}
 ```
