@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TerrariaServer = exports.defaultTerrariaServerConfig = void 0;
+exports.TerrariaServer = exports.defaultDownloadConfig = exports.defaultTerrariaServerConfig = void 0;
 const node_os_1 = __importDefault(require("node:os"));
 const node_events_1 = __importDefault(require("node:events"));
 const node_pty_1 = require("node-pty");
@@ -11,6 +11,7 @@ const lodash_defaultsdeep_1 = __importDefault(require("lodash.defaultsdeep"));
 const functions_1 = require("./functions");
 const adm_zip_1 = __importDefault(require("adm-zip"));
 const promises_1 = require("node:fs/promises");
+const node_fs_1 = require("node:fs");
 const shell = node_os_1.default.platform() === 'win32' ? 'cmd.exe' : 'bash';
 exports.defaultTerrariaServerConfig = {
     version: '1.4.4.9',
@@ -22,6 +23,10 @@ exports.defaultTerrariaServerConfig = {
     autoForwardPort: true,
     password: "",
     motd: ""
+};
+exports.defaultDownloadConfig = {
+    removeOther: false,
+    alwaysDownloadCurrent: false
 };
 class TerrariaServer extends node_events_1.default {
     config;
@@ -70,13 +75,20 @@ class TerrariaServer extends node_events_1.default {
             this.readyTimestamp = Date.now();
         });
     }
-    async download() {
+    async download(config) {
         if (!this.config.version)
             throw new Error('No version provided');
-        await (0, functions_1.download)(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download'); });
-        const zip = new adm_zip_1.default(`${__dirname}/server.zip`);
-        zip.extractAllTo(`${__dirname}/versions`);
-        await (0, promises_1.unlink)(`${__dirname}/server.zip`);
+        config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultDownloadConfig);
+        if (config.alwaysDownloadCurrent || !(0, node_fs_1.existsSync)(`${__dirname}/versions/${this.config.version.replaceAll('.', '')}`)) {
+            await (0, functions_1.download)(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download'); });
+            const zip = new adm_zip_1.default(`${__dirname}/server.zip`);
+            zip.extractAllTo(`${__dirname}/versions`);
+            await (0, promises_1.unlink)(`${__dirname}/server.zip`);
+        }
+        if (config.removeOther) {
+            const folders = await (0, promises_1.readdir)(`${__dirname}/versions`);
+            folders.filter(folder => folder != this.config.version.replaceAll('.', '')).forEach(async (folder) => await (0, promises_1.rm)(`${__dirname}/versions/${folder}`, { recursive: true, force: true }));
+        }
         this.config.path = `${__dirname}/versions/${this.config.version.replaceAll('.', '')}/Windows/`;
     }
     command(command) {

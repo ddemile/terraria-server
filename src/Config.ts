@@ -13,6 +13,11 @@ export interface Config {
     motd?: string
 }
 
+export interface DownloadConfig {
+    removeOther?: boolean
+    alwaysDownloadCurrent?: boolean
+}
+
 export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P]>;
 };

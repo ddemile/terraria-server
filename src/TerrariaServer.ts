@@ -1,11 +1,12 @@
 import os from "node:os";
 import EventEmitter from "node:events";
 import { spawn, IPty } from "node-pty";
-import { Config, DeepPartial } from './Config';
+import { Config, DeepPartial, DownloadConfig } from './Config';
 import defaultsDeep from 'lodash.defaultsdeep';
 import { download } from "./functions";
 import Zip from 'adm-zip';
-import { unlink } from "node:fs/promises";
+import { unlink, rm, readdir } from "node:fs/promises";
+import { existsSync } from 'node:fs'
 const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
 type Player = {
@@ -23,6 +24,11 @@ export const defaultTerrariaServerConfig: Config = {
     autoForwardPort: true,
     password: "",
     motd: ""
+}
+
+export const defaultDownloadConfig: DownloadConfig = {
+    removeOther: false,
+    alwaysDownloadCurrent: false
 }
 
 export class TerrariaServer extends EventEmitter {
@@ -73,16 +79,25 @@ export class TerrariaServer extends EventEmitter {
         })
     }
 
-    async download() {
+    async download(config: DeepPartial<DownloadConfig>) {
         if (!this.config.version) throw new Error('No version provided')
 
-        await download(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download') })
+        config = defaultsDeep(config, defaultDownloadConfig)
 
-        const zip = new Zip(`${__dirname}/server.zip`)
+        if (config.alwaysDownloadCurrent || !existsSync(`${__dirname}/versions/${this.config.version.replaceAll('.', '')}`)) {
+            await download(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download') })
 
-        zip.extractAllTo(`${__dirname}/versions`)
+            const zip = new Zip(`${__dirname}/server.zip`)
+    
+            zip.extractAllTo(`${__dirname}/versions`)
+            
+            await unlink(`${__dirname}/server.zip`)
+        }
         
-        await unlink(`${__dirname}/server.zip`)
+        if (config.removeOther) {
+            const folders = await readdir(`${__dirname}/versions`)
+            folders.filter(folder => folder != this.config.version.replaceAll('.', '')).forEach(async (folder) => await rm(`${__dirname}/versions/${folder}`, { recursive: true, force: true }))
+        }
 
         this.config.path = `${__dirname}/versions/${this.config.version.replaceAll('.', '')}/Windows/`
     }
