@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import EventEmitter from "node:events";
 import { Config, DeepPartial, DownloadConfig } from './Config';
-declare type Player = {
+type Player = {
     name: string;
     ip: string;
 };

@@ -61,11 +61,11 @@ class TerrariaServer extends node_events_1.default {
             if (data.split(' has left.')[1]) {
                 this.emit('leave', data.split(' has left.')[0]);
             }
-            if (data.startsWith('<') && data.split('>')[1]) {
+            if (/^<[^>]+>./.test(data)) {
                 const dataArray = data.split('');
                 dataArray.splice(0, data.split('>')[0].length + 1);
                 const message = dataArray.join('').trim();
-                const player = data.split('<')[1].split('>')[0];
+                const player = /<([^>]+)>/.exec(data)[1];
                 this.emit('message', message, player);
             }
         });
@@ -80,16 +80,16 @@ class TerrariaServer extends node_events_1.default {
             throw new Error('No version provided');
         config = (0, lodash_defaultsdeep_1.default)(config, exports.defaultDownloadConfig);
         if (config.alwaysDownloadCurrent || !(0, node_fs_1.existsSync)(`${__dirname}/versions/${this.config.version.replaceAll('.', '')}`)) {
-            await (0, functions_1.download)(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replaceAll('.', '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download'); });
+            await (0, functions_1.download)(`https://terraria.org/api/download/pc-dedicated-server/terraria-server-${this.config.version.replace(/\./g, '')}.zip`, `${__dirname}/server.zip`).catch(() => { throw new Error('Error during the download'); });
             const zip = new adm_zip_1.default(`${__dirname}/server.zip`);
             zip.extractAllTo(`${__dirname}/versions`);
             await (0, promises_1.unlink)(`${__dirname}/server.zip`);
         }
         if (config.removeOther) {
             const folders = await (0, promises_1.readdir)(`${__dirname}/versions`);
-            folders.filter(folder => folder != this.config.version.replaceAll('.', '')).forEach(async (folder) => await (0, promises_1.rm)(`${__dirname}/versions/${folder}`, { recursive: true, force: true }));
+            folders.filter(folder => folder != this.config.version.replace(/\./g, '')).forEach(async (folder) => await (0, promises_1.rm)(`${__dirname}/versions/${folder}`, { recursive: true, force: true }));
         }
-        this.config.path = `${__dirname}/versions/${this.config.version.replaceAll('.', '')}/Windows/`;
+        this.config.path = `${__dirname}/versions/${this.config.version.replace(/\./g, '')}/Windows/`;
     }
     command(command) {
         if (!command)

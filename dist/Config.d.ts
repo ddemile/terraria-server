@@ -1,5 +1,5 @@
-declare type File = `${string}.bat`;
-declare type TerrariaVersion = `${number}.${number}.${number}` | `${number}.${number}.${number}.${number}` | `${number}.${number}.${number}.${number}.${number}`;
+type File = `${string}.bat`;
+type TerrariaVersion = `${number}.${number}.${number}` | `${number}.${number}.${number}.${number}` | `${number}.${number}.${number}.${number}.${number}`;
 export interface Config {
     version?: TerrariaVersion;
     path?: string;
@@ -15,7 +15,7 @@ export interface DownloadConfig {
     removeOther?: boolean;
     alwaysDownloadCurrent?: boolean;
 }
-export declare type DeepPartial<T> = {
+export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P]>;
 };
 export {};
