@@ -192,6 +192,8 @@ export class TerrariaServer extends EventEmitter {
     }
 
     say(message: string) {
+        if (!this.ready) return;
+
         if (!message) throw new Error('No message provided')
 
         this.command(`say ${message}`)

@@ -176,6 +176,8 @@ class TerrariaServer extends node_events_1.default {
         this.start();
     }
     say(message) {
+        if (!this.ready)
+            return;
         if (!message)
             throw new Error('No message provided');
         this.command(`say ${message}`);
